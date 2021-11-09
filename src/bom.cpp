@@ -12,8 +12,15 @@ bom::bom(double x, double y, int dir, char val)
 	this->dir = dir;
     this->val = val;
 	h = w = 8;
+	std::vector<double> lowerBound({x, y});
+	std::vector<double> upperBound({x + w, y + h});
+	WORLD->insertAABB((AABBKey)this, lowerBound, upperBound);
 }
 
+bom::~bom()
+{
+	WORLD->removeAABB((AABBKey)this);
+}
 
 //子弹碰撞
 void bom::collision()
@@ -57,4 +64,8 @@ void bom::sport()
 			collision();
 		}break;
 	}
+
+	std::vector<double> lowerBound({(double)x, (double)y});
+	std::vector<double> upperBound({(double)(x + 2), (double)(y + h)});
+	WORLD->updateAABB((AABBKey)this, lowerBound, upperBound);
 }

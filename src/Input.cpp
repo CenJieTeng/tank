@@ -14,7 +14,7 @@ Input* input()
 void Input::update()
 {
 	SDL_Event event;
-    std::memset(&inputs2, 0, sizeof(inputs2) * sizeof(InputKey));
+    std::memset(&inputs2, 0, sizeof(inputs2));
 	while (SDL_PollEvent(&event))
 	{
 		switch (event.type)

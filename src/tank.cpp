@@ -12,6 +12,18 @@
 int tank::w;
 int tank::h;
 
+tank::tank()
+{
+	std::vector<double> lowerBound({0, 0});
+	std::vector<double> upperBound({0, 0});
+	WORLD->insertAABB((AABBKey)this, lowerBound, upperBound);
+}
+
+tank::~tank()
+{
+	WORLD->removeAABB((AABBKey)this);
+}
+
 //坦克移动
 void tank::sport()
 {
@@ -38,10 +50,19 @@ void tank::sport()
 	}
 	x += offsetX;
 	y += offsetY;
+	std::vector<double> lowerBound({(double)x, (double)y});
+	std::vector<double> upperBound({(double)(x + w), (double)(y + h)});
+	WORLD->updateAABB((AABBKey)this, lowerBound, upperBound);
+
 	if (WORLD->collision(*this))
 	{
+		//x -= offsetX ? (offsetX + (offsetX > 0 ? 1 : -1)) : 0;
+		//y -= offsetY ? (offsetY + (offsetY > 0 ? 1 : -1)) : 0;
 		x -= offsetX;
 		y -= offsetY;
+		std::vector<double> lowerBound2({(double)x, (double)y});
+		std::vector<double> upperBound2({(double)(x + w), (double)(y + h)});
+		WORLD->updateAABB((AABBKey)this, lowerBound2, upperBound2);
 	}
 }
 
@@ -115,7 +136,7 @@ void tank::handleInput()
 	if (input()->isTrigger(Input::InputKey::INPUT_SPACE))
 	{
 		auto now = SDL_GetTicks();
-		if (now - lastTick > 500)
+		if (now - lastTick > 300)
 		{
  			lastTick = now;
 			shoot();

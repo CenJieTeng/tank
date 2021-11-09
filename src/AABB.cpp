@@ -32,7 +32,7 @@ namespace aabb
     {
     }
 
-    AABB::AABB(unsigned int dimension)
+    AABB::AABB(AABBKey dimension)
     {
         assert(dimension >= 2);
 
@@ -50,7 +50,7 @@ namespace aabb
         }
 
         // Validate that the upper bounds exceed the lower bounds.
-        for (unsigned int i=0;i<lowerBound.size();i++)
+        for (AABBKey i=0;i<lowerBound.size();i++)
         {
             // Validate the bound.
             if (lowerBound[i] > upperBound[i])
@@ -70,12 +70,12 @@ namespace aabb
 
         // General formula for one side: hold one dimension constant
         // and multiply by all the other ones.
-        for (unsigned int d1 = 0; d1 < lowerBound.size(); d1++)
+        for (AABBKey d1 = 0; d1 < lowerBound.size(); d1++)
         {
             // "Area" of current side.
             double product = 1;
 
-            for (unsigned int d2 = 0; d2 < lowerBound.size(); d2++)
+            for (AABBKey d2 = 0; d2 < lowerBound.size(); d2++)
             {
                 if (d1 == d2)
                     continue;
@@ -104,7 +104,7 @@ namespace aabb
         lowerBound.resize(aabb1.lowerBound.size());
         upperBound.resize(aabb1.lowerBound.size());
 
-        for (unsigned int i=0;i<lowerBound.size();i++)
+        for (AABBKey i=0;i<lowerBound.size();i++)
         {
             lowerBound[i] = std::min(aabb1.lowerBound[i], aabb2.lowerBound[i]);
             upperBound[i] = std::max(aabb1.upperBound[i], aabb2.upperBound[i]);
@@ -118,7 +118,7 @@ namespace aabb
     {
         assert(aabb.lowerBound.size() == lowerBound.size());
 
-        for (unsigned int i=0;i<lowerBound.size();i++)
+        for (AABBKey i=0;i<lowerBound.size();i++)
         {
             if (aabb.lowerBound[i] < lowerBound[i]) return false;
             if (aabb.upperBound[i] > upperBound[i]) return false;
@@ -135,7 +135,7 @@ namespace aabb
 
         if (touchIsOverlap)
         {
-            for (unsigned int i = 0; i < lowerBound.size(); ++i)
+            for (AABBKey i = 0; i < lowerBound.size(); ++i)
             {
                 if (aabb.upperBound[i] < lowerBound[i] || aabb.lowerBound[i] > upperBound[i])
                 {
@@ -146,7 +146,7 @@ namespace aabb
         }
         else
         {
-            for (unsigned int i = 0; i < lowerBound.size(); ++i)
+            for (AABBKey i = 0; i < lowerBound.size(); ++i)
             {
                 if (aabb.upperBound[i] <= lowerBound[i] || aabb.lowerBound[i] >= upperBound[i])
                 {
@@ -163,13 +163,13 @@ namespace aabb
     {
         std::vector<double> position(lowerBound.size());
 
-        for (unsigned int i=0;i<position.size();i++)
+        for (AABBKey i=0;i<position.size();i++)
             position[i] = 0.5 * (lowerBound[i] + upperBound[i]);
 
         return position;
     }
 
-    void AABB::setDimension(unsigned int dimension)
+    void AABB::setDimension(AABBKey dimension)
     {
         assert(dimension >= 2);
 
@@ -186,9 +186,9 @@ namespace aabb
         return (left == NULL_NODE);
     }
 
-    Tree::Tree(unsigned int dimension_,
+    Tree::Tree(AABBKey dimension_,
                double skinThickness_,
-               unsigned int nParticles,
+               AABBKey nParticles,
                bool touchIsOverlap_) :
         dimension(dimension_), isPeriodic(false), skinThickness(skinThickness_),
         touchIsOverlap(touchIsOverlap_)
@@ -210,7 +210,7 @@ namespace aabb
         nodes.resize(nodeCapacity);
 
         // Build a linked list for the list of free nodes.
-        for (unsigned int i=0;i<nodeCapacity-1;i++)
+        for (AABBKey i=0;i<nodeCapacity-1;i++)
         {
             nodes[i].next = i + 1;
             nodes[i].height = -1;
@@ -222,11 +222,11 @@ namespace aabb
         freeList = 0;
     }
 
-    Tree::Tree(unsigned int dimension_,
+    Tree::Tree(AABBKey dimension_,
                double skinThickness_,
                const std::vector<bool>& periodicity_,
                const std::vector<double>& boxSize_,
-               unsigned int nParticles,
+               AABBKey nParticles,
                bool touchIsOverlap_) :
         dimension(dimension_), skinThickness(skinThickness_),
         periodicity(periodicity_), boxSize(boxSize_),
@@ -251,7 +251,7 @@ namespace aabb
         nodes.resize(nodeCapacity);
 
         // Build a linked list for the list of free nodes.
-        for (unsigned int i=0;i<nodeCapacity-1;i++)
+        for (AABBKey i=0;i<nodeCapacity-1;i++)
         {
             nodes[i].next = i + 1;
             nodes[i].height = -1;
@@ -266,7 +266,7 @@ namespace aabb
         isPeriodic = false;
         posMinImage.resize(dimension);
         negMinImage.resize(dimension);
-        for (unsigned int i=0;i<dimension;i++)
+        for (AABBKey i=0;i<dimension;i++)
         {
             posMinImage[i] =  0.5*boxSize[i];
             negMinImage[i] = -0.5*boxSize[i];
@@ -286,7 +286,7 @@ namespace aabb
         boxSize = boxSize_;
     }
 
-    unsigned int Tree::allocateNode()
+    AABBKey Tree::allocateNode()
     {
         // Exand the node pool as needed.
         if (freeList == NULL_NODE)
@@ -298,7 +298,7 @@ namespace aabb
             nodes.resize(nodeCapacity);
 
             // Build a linked list for the list of free nodes.
-            for (unsigned int i=nodeCount;i<nodeCapacity-1;i++)
+            for (AABBKey i=nodeCount;i<nodeCapacity-1;i++)
             {
                 nodes[i].next = i + 1;
                 nodes[i].height = -1;
@@ -311,7 +311,7 @@ namespace aabb
         }
 
         // Peel a node off the free list.
-        unsigned int node = freeList;
+        AABBKey node = freeList;
         freeList = nodes[node].next;
         nodes[node].parent = NULL_NODE;
         nodes[node].left = NULL_NODE;
@@ -323,7 +323,7 @@ namespace aabb
         return node;
     }
 
-    void Tree::freeNode(unsigned int node)
+    void Tree::freeNode(AABBKey node)
     {
         assert(node < nodeCapacity);
         assert(0 < nodeCount);
@@ -334,7 +334,7 @@ namespace aabb
         nodeCount--;
     }
 
-    void Tree::insertParticle(unsigned int particle, std::vector<double>& position, double radius)
+    void Tree::insertParticle(AABBKey particle, std::vector<double>& position, double radius)
     {
         // Make sure the particle doesn't already exist.
         if (particleMap.count(particle) != 0)
@@ -349,13 +349,13 @@ namespace aabb
         }
 
         // Allocate a new node for the particle.
-        unsigned int node = allocateNode();
+        AABBKey node = allocateNode();
 
         // AABB size in each dimension.
         std::vector<double> size(dimension);
 
         // Compute the AABB limits.
-        for (unsigned int i=0;i<dimension;i++)
+        for (AABBKey i=0;i<dimension;i++)
         {
             nodes[node].aabb.lowerBound[i] = position[i] - radius;
             nodes[node].aabb.upperBound[i] = position[i] + radius;
@@ -363,7 +363,7 @@ namespace aabb
         }
 
         // Fatten the AABB.
-        for (unsigned int i=0;i<dimension;i++)
+        for (AABBKey i=0;i<dimension;i++)
         {
             nodes[node].aabb.lowerBound[i] -= skinThickness * size[i];
             nodes[node].aabb.upperBound[i] += skinThickness * size[i];
@@ -378,13 +378,13 @@ namespace aabb
         insertLeaf(node);
 
         // Add the new particle to the map.
-        particleMap.insert(std::unordered_map<unsigned int, unsigned int>::value_type(particle, node));
+        particleMap.insert(std::unordered_map<AABBKey, AABBKey>::value_type(particle, node));
 
         // Store the particle index.
         nodes[node].particle = particle;
     }
 
-    void Tree::insertParticle(unsigned int particle, std::vector<double>& lowerBound, std::vector<double>& upperBound)
+    void Tree::insertParticle(AABBKey particle, std::vector<double>& lowerBound, std::vector<double>& upperBound)
     {
         // Make sure the particle doesn't already exist.
         if (particleMap.count(particle) != 0)
@@ -399,13 +399,13 @@ namespace aabb
         }
 
         // Allocate a new node for the particle.
-        unsigned int node = allocateNode();
+        AABBKey node = allocateNode();
 
         // AABB size in each dimension.
         std::vector<double> size(dimension);
 
         // Compute the AABB limits.
-        for (unsigned int i=0;i<dimension;i++)
+        for (AABBKey i=0;i<dimension;i++)
         {
             // Validate the bound.
             if (lowerBound[i] > upperBound[i])
@@ -419,7 +419,7 @@ namespace aabb
         }
 
         // Fatten the AABB.
-        for (unsigned int i=0;i<dimension;i++)
+        for (AABBKey i=0;i<dimension;i++)
         {
             nodes[node].aabb.lowerBound[i] -= skinThickness * size[i];
             nodes[node].aabb.upperBound[i] += skinThickness * size[i];
@@ -434,21 +434,21 @@ namespace aabb
         insertLeaf(node);
 
         // Add the new particle to the map.
-        particleMap.insert(std::unordered_map<unsigned int, unsigned int>::value_type(particle, node));
+        particleMap.insert(std::unordered_map<AABBKey, AABBKey>::value_type(particle, node));
 
         // Store the particle index.
         nodes[node].particle = particle;
     }
 
-    unsigned int Tree::nParticles()
+    AABBKey Tree::nParticles()
     {
         return particleMap.size();
     }
 
-    void Tree::removeParticle(unsigned int particle)
+    void Tree::removeParticle(AABBKey particle)
     {
         // Map iterator.
-        std::unordered_map<unsigned int, unsigned int>::iterator it;
+        std::unordered_map<AABBKey, AABBKey>::iterator it;
 
         // Find the particle.
         it = particleMap.find(particle);
@@ -460,7 +460,7 @@ namespace aabb
         }
 
         // Extract the node index.
-        unsigned int node = it->second;
+        AABBKey node = it->second;
 
         // Erase the particle from the map.
         particleMap.erase(it);
@@ -475,13 +475,13 @@ namespace aabb
     void Tree::removeAll()
     {
         // Iterator pointing to the start of the particle map.
-        std::unordered_map<unsigned int, unsigned int>::iterator it = particleMap.begin();
+        std::unordered_map<AABBKey, AABBKey>::iterator it = particleMap.begin();
 
         // Iterate over the map.
         while (it != particleMap.end())
         {
             // Extract the node index.
-            unsigned int node = it->second;
+            AABBKey node = it->second;
 
             assert(node < nodeCapacity);
             assert(nodes[node].isLeaf());
@@ -496,7 +496,7 @@ namespace aabb
         particleMap.clear();
     }
 
-    bool Tree::updateParticle(unsigned int particle, std::vector<double>& position, double radius,
+    bool Tree::updateParticle(AABBKey particle, std::vector<double>& position, double radius,
                               bool alwaysReinsert)
     {
         // Validate the dimensionality of the position vector.
@@ -510,7 +510,7 @@ namespace aabb
         std::vector<double> upperBound(dimension);
 
         // Compute the AABB limits.
-        for (unsigned int i=0;i<dimension;i++)
+        for (AABBKey i=0;i<dimension;i++)
         {
             lowerBound[i] = position[i] - radius;
             upperBound[i] = position[i] + radius;
@@ -520,7 +520,7 @@ namespace aabb
         return updateParticle(particle, lowerBound, upperBound, alwaysReinsert);
     }
 
-    bool Tree::updateParticle(unsigned int particle, std::vector<double>& lowerBound,
+    bool Tree::updateParticle(AABBKey particle, std::vector<double>& lowerBound,
                               std::vector<double>& upperBound, bool alwaysReinsert)
     {
         // Validate the dimensionality of the bounds vectors.
@@ -530,7 +530,7 @@ namespace aabb
         }
 
         // Map iterator.
-        std::unordered_map<unsigned int, unsigned int>::iterator it;
+        std::unordered_map<AABBKey, AABBKey>::iterator it;
 
         // Find the particle.
         it = particleMap.find(particle);
@@ -542,7 +542,7 @@ namespace aabb
         }
 
         // Extract the node index.
-        unsigned int node = it->second;
+        AABBKey node = it->second;
 
         assert(node < nodeCapacity);
         assert(nodes[node].isLeaf());
@@ -551,7 +551,7 @@ namespace aabb
         std::vector<double> size(dimension);
 
         // Compute the AABB limits.
-        for (unsigned int i=0;i<dimension;i++)
+        for (AABBKey i=0;i<dimension;i++)
         {
             // Validate the bound.
             if (lowerBound[i] > upperBound[i])
@@ -572,7 +572,7 @@ namespace aabb
         removeLeaf(node);
 
         // Fatten the new AABB.
-        for (unsigned int i=0;i<dimension;i++)
+        for (AABBKey i=0;i<dimension;i++)
         {
             aabb.lowerBound[i] -= skinThickness * size[i];
             aabb.upperBound[i] += skinThickness * size[i];
@@ -591,7 +591,7 @@ namespace aabb
         return true;
     }
 
-    std::vector<unsigned int> Tree::query(unsigned int particle)
+    std::vector<AABBKey> Tree::query(AABBKey particle)
     {
         // Make sure that this is a valid particle.
         if (particleMap.count(particle) == 0)
@@ -603,17 +603,17 @@ namespace aabb
         return query(particle, nodes[particleMap.find(particle)->second].aabb);
     }
 
-    std::vector<unsigned int> Tree::query(unsigned int particle, const AABB& aabb)
+    std::vector<AABBKey> Tree::query(AABBKey particle, const AABB& aabb)
     {
-        std::vector<unsigned int> stack;
+        std::vector<AABBKey> stack;
         stack.reserve(256);
         stack.push_back(root);
 
-        std::vector<unsigned int> particles;
+        std::vector<AABBKey> particles;
 
         while (stack.size() > 0)
         {
-            unsigned int node = stack.back();
+            AABBKey node = stack.back();
             stack.pop_back();
 
             // Copy the AABB.
@@ -625,7 +625,7 @@ namespace aabb
             {
                 std::vector<double> separation(dimension);
                 std::vector<double> shift(dimension);
-                for (unsigned int i=0;i<dimension;i++)
+                for (AABBKey i=0;i<dimension;i++)
                     separation[i] = nodeAABB.centre[i] - aabb.centre[i];
 
                 bool isShifted = minimumImage(separation, shift);
@@ -633,7 +633,7 @@ namespace aabb
                 // Shift the AABB.
                 if (isShifted)
                 {
-                    for (unsigned int i=0;i<dimension;i++)
+                    for (AABBKey i=0;i<dimension;i++)
                     {
                         nodeAABB.lowerBound[i] += shift[i];
                         nodeAABB.upperBound[i] += shift[i];
@@ -664,24 +664,24 @@ namespace aabb
         return particles;
     }
 
-    std::vector<unsigned int> Tree::query(const AABB& aabb)
+    std::vector<AABBKey> Tree::query(const AABB& aabb)
     {
         // Make sure the tree isn't empty.
         if (particleMap.size() == 0)
         {
-            return std::vector<unsigned int>();
+            return std::vector<AABBKey>();
         }
 
         // Test overlap of AABB against all particles.
-        return query(std::numeric_limits<unsigned int>::max(), aabb);
+        return query(std::numeric_limits<AABBKey>::max(), aabb);
     }
 
-    const AABB& Tree::getAABB(unsigned int particle)
+    const AABB& Tree::getAABB(AABBKey particle)
     {
         return nodes[particleMap[particle]].aabb;
     }
 
-    void Tree::insertLeaf(unsigned int leaf)
+    void Tree::insertLeaf(AABBKey leaf)
     {
         if (root == NULL_NODE)
         {
@@ -693,13 +693,13 @@ namespace aabb
         // Find the best sibling for the node.
 
         AABB leafAABB = nodes[leaf].aabb;
-        unsigned int index = root;
+        AABBKey index = root;
 
         while (!nodes[index].isLeaf())
         {
             // Extract the children of the node.
-            unsigned int left  = nodes[index].left;
-            unsigned int right = nodes[index].right;
+            AABBKey left  = nodes[index].left;
+            AABBKey right = nodes[index].right;
 
             double surfaceArea = nodes[index].aabb.getSurfaceArea();
 
@@ -755,11 +755,11 @@ namespace aabb
             else                      index = right;
         }
 
-        unsigned int sibling = index;
+        AABBKey sibling = index;
 
         // Create a new parent.
-        unsigned int oldParent = nodes[sibling].parent;
-        unsigned int newParent = allocateNode();
+        AABBKey oldParent = nodes[sibling].parent;
+        AABBKey newParent = allocateNode();
         nodes[newParent].parent = oldParent;
         nodes[newParent].aabb.merge(leafAABB, nodes[sibling].aabb);
         nodes[newParent].height = nodes[sibling].height + 1;
@@ -791,8 +791,8 @@ namespace aabb
         {
             index = balance(index);
 
-            unsigned int left = nodes[index].left;
-            unsigned int right = nodes[index].right;
+            AABBKey left = nodes[index].left;
+            AABBKey right = nodes[index].right;
 
             assert(left != NULL_NODE);
             assert(right != NULL_NODE);
@@ -804,7 +804,7 @@ namespace aabb
         }
     }
 
-    void Tree::removeLeaf(unsigned int leaf)
+    void Tree::removeLeaf(AABBKey leaf)
     {
         if (leaf == root)
         {
@@ -812,9 +812,9 @@ namespace aabb
             return;
         }
 
-        unsigned int parent = nodes[leaf].parent;
-        unsigned int grandParent = nodes[parent].parent;
-        unsigned int sibling;
+        AABBKey parent = nodes[leaf].parent;
+        AABBKey grandParent = nodes[parent].parent;
+        AABBKey sibling;
 
         if (nodes[parent].left == leaf) sibling = nodes[parent].right;
         else                            sibling = nodes[parent].left;
@@ -829,13 +829,13 @@ namespace aabb
             freeNode(parent);
 
             // Adjust ancestor bounds.
-            unsigned int index = grandParent;
+            AABBKey index = grandParent;
             while (index != NULL_NODE)
             {
                 index = balance(index);
 
-                unsigned int left = nodes[index].left;
-                unsigned int right = nodes[index].right;
+                AABBKey left = nodes[index].left;
+                AABBKey right = nodes[index].right;
 
                 nodes[index].aabb.merge(nodes[left].aabb, nodes[right].aabb);
                 nodes[index].height = 1 + std::max(nodes[left].height, nodes[right].height);
@@ -851,15 +851,15 @@ namespace aabb
         }
     }
 
-    unsigned int Tree::balance(unsigned int node)
+    AABBKey Tree::balance(AABBKey node)
     {
         assert(node != NULL_NODE);
 
         if (nodes[node].isLeaf() || (nodes[node].height < 2))
             return node;
 
-        unsigned int left = nodes[node].left;
-        unsigned int right = nodes[node].right;
+        AABBKey left = nodes[node].left;
+        AABBKey right = nodes[node].right;
 
         assert(left < nodeCapacity);
         assert(right < nodeCapacity);
@@ -869,8 +869,8 @@ namespace aabb
         // Rotate right branch up.
         if (currentBalance > 1)
         {
-            unsigned int rightLeft = nodes[right].left;
-            unsigned int rightRight = nodes[right].right;
+            AABBKey rightLeft = nodes[right].left;
+            AABBKey rightRight = nodes[right].right;
 
             assert(rightLeft < nodeCapacity);
             assert(rightRight < nodeCapacity);
@@ -922,8 +922,8 @@ namespace aabb
         // Rotate left branch up.
         if (currentBalance < -1)
         {
-            unsigned int leftLeft = nodes[left].left;
-            unsigned int leftRight = nodes[left].right;
+            AABBKey leftLeft = nodes[left].left;
+            AABBKey leftRight = nodes[left].right;
 
             assert(leftLeft < nodeCapacity);
             assert(leftRight < nodeCapacity);
@@ -975,45 +975,45 @@ namespace aabb
         return node;
     }
 
-    unsigned int Tree::computeHeight() const
+    AABBKey Tree::computeHeight() const
     {
         return computeHeight(root);
     }
 
-    unsigned int Tree::computeHeight(unsigned int node) const
+    AABBKey Tree::computeHeight(AABBKey node) const
     {
         assert(node < nodeCapacity);
 
         if (nodes[node].isLeaf()) return 0;
 
-        unsigned int height1 = computeHeight(nodes[node].left);
-        unsigned int height2 = computeHeight(nodes[node].right);
+        AABBKey height1 = computeHeight(nodes[node].left);
+        AABBKey height2 = computeHeight(nodes[node].right);
 
         return 1 + std::max(height1, height2);
     }
 
-    unsigned int Tree::getHeight() const
+    AABBKey Tree::getHeight() const
     {
         if (root == NULL_NODE) return 0;
         return nodes[root].height;
     }
 
-    unsigned int Tree::getNodeCount() const
+    AABBKey Tree::getNodeCount() const
     {
         return nodeCount;
     }
 
-    unsigned int Tree::computeMaximumBalance() const
+    AABBKey Tree::computeMaximumBalance() const
     {
-        unsigned int maxBalance = 0;
-        for (unsigned int i=0; i<nodeCapacity; i++)
+        AABBKey maxBalance = 0;
+        for (AABBKey i=0; i<nodeCapacity; i++)
         {
             if (nodes[i].height <= 1)
                 continue;
 
             assert(nodes[i].isLeaf() == false);
 
-            unsigned int balance = std::abs(nodes[nodes[i].left].height - nodes[nodes[i].right].height);
+            AABBKey balance = std::abs(nodes[nodes[i].left].height - nodes[nodes[i].right].height);
             maxBalance = std::max(maxBalance, balance);
         }
 
@@ -1027,7 +1027,7 @@ namespace aabb
         double rootArea = nodes[root].aabb.computeSurfaceArea();
         double totalArea = 0.0;
 
-        for (unsigned int i=0; i<nodeCapacity;i++)
+        for (AABBKey i=0; i<nodeCapacity;i++)
         {
             if (nodes[i].height < 0) continue;
 
@@ -1043,8 +1043,8 @@ namespace aabb
         validateStructure(root);
         validateMetrics(root);
 
-        unsigned int freeCount = 0;
-        unsigned int freeIndex = freeList;
+        AABBKey freeCount = 0;
+        AABBKey freeIndex = freeList;
 
         while (freeIndex != NULL_NODE)
         {
@@ -1060,10 +1060,10 @@ namespace aabb
 
     void Tree::rebuild()
     {
-        std::vector<unsigned int> nodeIndices(nodeCount);
-        unsigned int count = 0;
+        std::vector<AABBKey> nodeIndices(nodeCount);
+        AABBKey count = 0;
 
-        for (unsigned int i=0;i<nodeCapacity;i++)
+        for (AABBKey i=0;i<nodeCapacity;i++)
         {
             // Free node.
             if (nodes[i].height < 0) continue;
@@ -1082,11 +1082,11 @@ namespace aabb
             double minCost = std::numeric_limits<double>::max();
             int iMin = -1, jMin = -1;
 
-            for (unsigned int i=0;i<count;i++)
+            for (AABBKey i=0;i<count;i++)
             {
                 AABB aabbi = nodes[nodeIndices[i]].aabb;
 
-                for (unsigned int j=i+1;j<count;j++)
+                for (AABBKey j=i+1;j<count;j++)
                 {
                     AABB aabbj = nodes[nodeIndices[j]].aabb;
                     AABB aabb;
@@ -1102,10 +1102,10 @@ namespace aabb
                 }
             }
 
-            unsigned int index1 = nodeIndices[iMin];
-            unsigned int index2 = nodeIndices[jMin];
+            AABBKey index1 = nodeIndices[iMin];
+            AABBKey index2 = nodeIndices[jMin];
 
-            unsigned int parent = allocateNode();
+            AABBKey parent = allocateNode();
             nodes[parent].left = index1;
             nodes[parent].right = index2;
             nodes[parent].height = 1 + std::max(nodes[index1].height, nodes[index2].height);
@@ -1125,14 +1125,14 @@ namespace aabb
         validate();
     }
 
-    void Tree::validateStructure(unsigned int node) const
+    void Tree::validateStructure(AABBKey node) const
     {
         if (node == NULL_NODE) return;
 
         if (node == root) assert(nodes[node].parent == NULL_NODE);
 
-        unsigned int left = nodes[node].left;
-        unsigned int right = nodes[node].right;
+        AABBKey left = nodes[node].left;
+        AABBKey right = nodes[node].right;
 
         if (nodes[node].isLeaf())
         {
@@ -1152,12 +1152,12 @@ namespace aabb
         validateStructure(right);
     }
 
-    void Tree::validateMetrics(unsigned int node) const
+    void Tree::validateMetrics(AABBKey node) const
     {
         if (node == NULL_NODE) return;
 
-        unsigned int left = nodes[node].left;
-        unsigned int right = nodes[node].right;
+        AABBKey left = nodes[node].left;
+        AABBKey right = nodes[node].right;
 
         if (nodes[node].isLeaf())
         {
@@ -1179,7 +1179,7 @@ namespace aabb
         AABB aabb;
         aabb.merge(nodes[left].aabb, nodes[right].aabb);
 
-        for (unsigned int i=0;i<dimension;i++)
+        for (AABBKey i=0;i<dimension;i++)
         {
             assert(aabb.lowerBound[i] == nodes[node].aabb.lowerBound[i]);
             assert(aabb.upperBound[i] == nodes[node].aabb.upperBound[i]);
@@ -1191,7 +1191,7 @@ namespace aabb
 
     void Tree::periodicBoundaries(std::vector<double>& position)
     {
-        for (unsigned int i=0;i<dimension;i++)
+        for (AABBKey i=0;i<dimension;i++)
         {
             if (position[i] < 0)
             {
@@ -1211,7 +1211,7 @@ namespace aabb
     {
         bool isShifted = false;
 
-        for (unsigned int i=0;i<dimension;i++)
+        for (AABBKey i=0;i<dimension;i++)
         {
             if (separation[i] < negMinImage[i])
             {

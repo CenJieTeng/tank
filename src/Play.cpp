@@ -10,14 +10,14 @@
 
 BaseState* Play::update()
 {
-    if (t.isDead())
+    if (t->isDead())
     {
         return new GameOver;
     }
 
     //坦克更新
-	t.handleInput();
-    t.sport();
+	t->handleInput();
+    t->sport();
 
     //ai坦克更新
     for (int i = 0; i < numTis; ++i)
@@ -31,7 +31,7 @@ BaseState* Play::update()
     //bom更新
     for (auto iter = WORLD->bomList.begin(); iter != WORLD->bomList.end(); ++iter)
     {
-        (*iter)->sport();
+		(*iter)->sport();
     }
 
 	//清除bom
@@ -76,9 +76,9 @@ void Play::enterState()
 	box5[1] = {W/11/2, 800 - H/19, h/10, w/5};
 	box10 = {W-100, 0, 50, 50};
 	box11 = {W-100, 50, 50, 50};
-	tank::w = w;
-	tank::h = h;
-	sceneInit();
+	tank::w = 30;
+	tank::h = 30;
+	sceneInit(W, H);
 
 	//init world
 	{
@@ -128,8 +128,9 @@ void Play::enterState()
 	tex8 = SDL_CreateTextureFromSurface(renderer, tempSur);
 	SDL_FreeSurface(tempSur);
 
-	t.setX(0),
-	t.setY(H/2);
+	t = new tank();
+	t->setX(0),
+	t->setY(H/2);
 
     //创建ai
     for (int i = 0; i < numTis; ++i)
@@ -148,6 +149,8 @@ void Play::enterState()
 
 void Play::exitState()
 {
+	delete t;
+	t = NULL;
 	SDL_DestroyTexture(tex1);
 	Mix_FreeMusic(music1);
 	Mix_FreeMusic(music2);
@@ -208,16 +211,16 @@ void Play::draw()
 	SDL_RenderCopy(renderer, tex2, NULL, &WORLD->sceneBox);
 
 	//渲染场景方块
-	int i = 0;
     SDL_Rect *stageBox = WORLD->stageBox;
-	while (i != 93)
+	for (int i = 0; i < 100; i++)
 	{
 		SDL_RenderCopy(renderer, tex5, &cut4, &stageBox[i]);
-		++i;
+		//SDL_SetRenderDrawColor(renderer, 0xff, 0, 0, 0xff);
+		//SDL_RenderFillRect(renderer, &stageBox[i]);
 	}
 
     //绘制坦克
-	drawTank(&t, cut1);
+	drawTank(t, cut1);
 
     //绘制ai坦克
     for (int i = 0; i < numTis; i++)
@@ -241,7 +244,7 @@ void Play::draw()
 	SDL_RenderClear(renderer);
 }
 
-void Play::sceneInit()
+void Play::sceneInit(int W, int H)
 {
     SDL_Rect *stageBox = WORLD->stageBox;
 	//T
@@ -344,6 +347,11 @@ void Play::sceneInit()
 	stageBox[90] = {w/2*8, 190+h/2*18, w/2, h/2};
 	stageBox[91] = {w/2*7, 190+h/2*18, w/2, h/2};
 	stageBox[92] = {w/2*6, 190+h/2*18, w/2, h/2};
+	//scene box
+	stageBox[93] = {-4, 0, 2, H};
+	stageBox[94] = {W, 0, 2, H};
+	stageBox[95] = {0, (H-sh)/2, W, 2};
+	stageBox[96] = {0, (H-sh)/2+sh, W, 2};
 }
 
 bool Play::checkWin()

@@ -30,7 +30,7 @@ private:
     void drawBom(bom &bom);
     void drawScore();
     void draw();
-    void sceneInit();
+    void sceneInit(int W, int H);
     bool checkWin();
 
 private:
@@ -51,7 +51,7 @@ private:
     Mix_Music *music1 = NULL;//开始音乐
     Mix_Music *music2 = NULL;//爆炸音乐
     Mix_Music *music3 = NULL;//坦克移动音乐
-    tank t;//坦克
+    tank *t;//坦克
     tankAI *tis[4];
     int numTis = 4;
     int sh;//场景高

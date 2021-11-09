@@ -7,6 +7,7 @@ class bom
 {
 public:
 	bom(double x, double y, int dir, char val);
+	~bom();
 	int getX(){return x;}
 	int getY(){return y;}
 	char GetChar(){return val;}

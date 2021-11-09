@@ -3,6 +3,8 @@
 class tank
 {
 public:
+	tank();
+	~tank();
 	void sport();
 	void deDeviation();
 	void create();

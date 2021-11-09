@@ -14,6 +14,6 @@ int main(int argv, char** args)
 		SDL_Delay(16);
 		input()->update();
 		gameState.update();
-	}    
+	}
 	return 0;
 }

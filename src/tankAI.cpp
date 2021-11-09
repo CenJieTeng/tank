@@ -4,10 +4,7 @@
 #include"bom.h"
 #include"tankAI.h"
 
-int j = 0;//方块个数
-int deva = -1;//误差判断
 int dis = 0;//路程
-extern int devasize;//误差大小
 
 //AI行为
 void tankAI::AI()
@@ -55,4 +52,8 @@ void tankAI::sportAI()
 			y += speed;
 		}break;
 	}
+
+	std::vector<double> lowerBound({(double)x, (double)y});
+	std::vector<double> upperBound({(double)(x + w), (double)(y + h)});
+	WORLD->updateAABB((AABBKey)this, lowerBound, upperBound);
 }
