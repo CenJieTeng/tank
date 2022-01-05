@@ -27,10 +27,10 @@ GameState::~GameState()
     }
 }
 
-void GameState::update()
+void GameState::update(double elasped)
 {
     BaseState* nextState = nullptr;
-    nextState = state_->update();
+    nextState = state_->update(elasped);
 
     if (nextState)
     {

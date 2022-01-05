@@ -5,7 +5,7 @@ class tank
 public:
 	tank();
 	~tank();
-	void sport();
+	void sport(double elasped);
 	void deDeviation();
 	void create();
 	int getX();
@@ -33,7 +33,7 @@ protected:
 	double x = 0;
 	double y = 0;
 	int dir = 0;
-	int speed = 2;
+	int speed = 120;
 	char val = 't';
 	char bomVal = 'b';
 	bool dead = false;

@@ -7,9 +7,9 @@ class SDL_Rect;
 class tankAI : public tank
 {
 public:
-	void AI();
+	void AI(double elasped);
 
 private:
-	void sportAI();
+	void sportAI(double elasped);
 };
 #endif

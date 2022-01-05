@@ -4,7 +4,7 @@
 #include "Title.h"
 #include "GameOver.h"
 
-BaseState* GameOver::update()
+BaseState* GameOver::update(double elasped)
 {
     if (++count_ >= 60)
     {
@@ -12,8 +12,6 @@ BaseState* GameOver::update()
     }
 
     SDL_RenderCopyEx(renderer, tex, 0, 0, 90.0, 0, SDL_FLIP_NONE);
-    SDL_RenderPresent(renderer);
-    SDL_RenderClear(renderer);
 
     return nullptr;
 }

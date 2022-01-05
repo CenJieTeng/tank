@@ -8,7 +8,7 @@
 #include "Title.h"
 #include "Play.h"
 
-BaseState* Play::update()
+BaseState* Play::update(double elasped)
 {
     if (t->isDead())
     {
@@ -17,14 +17,14 @@ BaseState* Play::update()
 
     //坦克更新
 	t->handleInput();
-    t->sport();
+    t->sport(elasped);
 
     //ai坦克更新
     for (int i = 0; i < numTis; ++i)
     {
         if (tis[i] != NULL)
         {
-            tis[i]->AI();
+            tis[i]->AI(elasped);
         }
     }
 
@@ -239,9 +239,6 @@ void Play::draw()
 
 	//绘制分数
 	drawScore();
-
-    SDL_RenderPresent(renderer);
-	SDL_RenderClear(renderer);
 }
 
 void Play::sceneInit(int W, int H)

@@ -7,10 +7,10 @@
 int dis = 0;//路程
 
 //AI行为
-void tankAI::AI()
+void tankAI::AI(double elasped)
 {
 	double prex = x, prey = y;
-	sportAI();
+	sportAI(elasped);
 	if (rand() % 50 == 0)
 		shoot();
 	if(WORLD->collision(*this) || dis >= 50)
@@ -30,26 +30,26 @@ void tankAI::AI()
 }
 
 //AI坦克移动
-void tankAI::sportAI()
+void tankAI::sportAI(double elasped)
 {
 	++dis;
 	switch (getDir())
 	{
 		case 0:
 		{
-			x += speed;
+			x += speed * elasped;
 		}break;
 		case 1:
 		{
-			x -= speed;
+			x -= speed * elasped;
 		}break;
 		case 2:
 		{
-			y -= speed;
+			y -= speed * elasped;
 		}break;
 		case 3:
 		{
-			y += speed;
+			y += speed * elasped;
 		}break;
 	}
 

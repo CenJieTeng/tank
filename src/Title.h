@@ -11,7 +11,7 @@ class SDL_Texture;
 class Title : public BaseState
 {
 protected:
-    virtual BaseState* update() override;
+    virtual BaseState* update(double elasped) override;
     virtual void enterState() override;
     virtual void exitState() override;
 

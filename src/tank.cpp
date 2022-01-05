@@ -25,28 +25,28 @@ tank::~tank()
 }
 
 //坦克移动
-void tank::sport()
+void tank::sport(double elasped)
 {
-	int offsetX = 0, offsetY = 0;
+	double offsetX = 0, offsetY = 0;
  	if (input()->isOn(Input::InputKey::INPUT_D))
 	{
 		dir = 0;
-		offsetX = speed;
+		offsetX = speed * elasped;
 	}
 	else if(input()->isOn(Input::InputKey::INPUT_A))
 	{
 		dir = 1;
-		offsetX = -speed;
+		offsetX = -speed * elasped;
 	}
 	else if(input()->isOn(Input::InputKey::INPUT_W))
 	{
 		dir = 2;
-		offsetY = -speed;
+		offsetY = -speed * elasped;
 	}
 	else if(input()->isOn(Input::InputKey::INPUT_S))
 	{
 		dir = 3;
-		offsetY = speed;
+		offsetY = speed * elasped;
 	}
 	x += offsetX;
 	y += offsetY;

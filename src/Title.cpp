@@ -10,7 +10,7 @@
 #include "Play.h"
 #include "Title.h"
 
-BaseState* Title::update()
+BaseState* Title::update(double elasped)
 {
     if (input()->isTrigger(Input::InputKey::INPUT_SPACE))
     {
@@ -29,9 +29,6 @@ BaseState* Title::update()
     SDL_SetTextureBlendMode(tex, SDL_BLENDMODE_BLEND);
     SDL_SetTextureAlphaMod(tex, abs(sin(x++/32.0)) * 255.0);
     SDL_RenderCopyEx(renderer, tex, 0, &box, 90.0, &center, SDL_FLIP_NONE);
-
-    SDL_RenderPresent(renderer);
-    SDL_RenderClear(renderer);
         
     return nullptr;
 }

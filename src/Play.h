@@ -22,7 +22,7 @@ public:
 
 protected:
     virtual void enterState() override;
-    virtual BaseState* update() override;
+    virtual BaseState* update(double elasped) override;
     virtual void exitState() override;
 
 private:

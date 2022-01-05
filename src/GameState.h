@@ -15,7 +15,7 @@ public:
 
     GameState(StateType type);
     ~GameState();
-    void update();
+    void update(double elasped);
 
 private:
     BaseState* state_;
